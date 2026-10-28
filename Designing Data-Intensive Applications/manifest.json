@@ -1,0 +1,26 @@
+{
+  "id": "designing-data-intensive-applications",
+  "title": "Designing Data-Intensive Applications",
+  "author": "Martin Kleppmann",
+  "category": "system-design",
+  "cover_url": "Designing%20Data-Intensive%20Applications/cover.jpg",
+  "cover_version": "1793197947",
+  "total_tracks": 2,
+  "total_duration": 690.3,
+  "chapters": [
+    {
+      "index": 0,
+      "name": "About this Book",
+      "file_size": 4651843,
+      "duration": 625.3,
+      "stream_url": "Designing%20Data-Intensive%20Applications/01%20-%20About%20this%20Book.mp3"
+    },
+    {
+      "index": 1,
+      "name": "Part I Foundations of Data Systems",
+      "file_size": 1286406,
+      "duration": 65.0,
+      "stream_url": "Designing%20Data-Intensive%20Applications/02%20-%20Part%20I%20Foundations%20of%20Data%20Systems.mp3"
+    }
+  ]
+}

@@ -2,7 +2,7 @@
 """
 Technical Audiobook Scanner & Catalog Generator
 Scans tech audiobook directories, extracts track metadata & durations via mutagen,
-and outputs books.json for the Technical Audiobook PWA.
+and outputs books.json and partitioned manifest.json files for the Technical Audiobook PWA.
 """
 
 import os
@@ -75,6 +75,25 @@ def scan():
     books = []
     ignored = {'.git', '.github', '__pycache__', 'node_modules', 'scratch', 'runners', '.venv', 'venv'}
 
+    # Read existing books.json to preserve wishlist and timestamps
+    output_file = BASE_DIR / "books.json"
+    existing_books_map = {}
+    existing_wishlist = []
+    if output_file.exists():
+        try:
+            with open(output_file, "r", encoding="utf-8") as f:
+                old_data = json.load(f)
+                for b in old_data.get("books", []):
+                    b_id = b.get("id")
+                    if b_id:
+                        existing_books_map[b_id] = b
+                    if b.get("status") == "wishlist":
+                        existing_wishlist.append(b)
+        except Exception as e:
+            print(f"Warning reading existing books.json: {e}")
+
+    total_chapters_scanned = 0
+
     for item in sorted(BASE_DIR.iterdir()):
         if not item.is_dir() or item.name in ignored or item.name.startswith('.'):
             continue
@@ -139,9 +158,31 @@ def scan():
                 "stream_url": stream_rel
             })
 
-        # If book has no audio files yet but has cover or metadata, list it as queued/ready
+        total_chapters_scanned += len(chapters)
         is_ready = len(chapters) > 0
         total_tracks = len(chapters) if is_ready else custom_meta.get("total_tracks", 15)
+
+        manifest_rel = None
+        if is_ready:
+            # 1. PARTITIONED MANIFEST (DDIA Ch 3 & 4):
+            manifest_rel = f"{urllib.parse.quote(item.name)}/manifest.json"
+            book_manifest_file = item / "manifest.json"
+            manifest_payload = {
+                "id": book_id,
+                "title": title,
+                "author": author,
+                "category": category,
+                "cover_url": cover_rel,
+                "cover_version": cover_version,
+                "total_tracks": len(chapters),
+                "total_duration": round(total_duration, 1),
+                "chapters": chapters
+            }
+            with open(book_manifest_file, "w", encoding="utf-8") as mf:
+                json.dump(manifest_payload, mf, indent=2, ensure_ascii=False)
+
+        prev_book = existing_books_map.get(book_id, {})
+        last_played = prev_book.get("lastPlayedTimestamp", 0)
 
         book_entry = {
             "id": book_id,
@@ -151,37 +192,30 @@ def scan():
             "status": "ready" if is_ready else "planned",
             "cover_url": cover_rel,
             "cover_version": cover_version,
-            "chapters": chapters,
             "total_tracks": total_tracks,
-            "total_duration": total_duration,
+            "total_duration": round(total_duration, 1),
+            "lastPlayedTimestamp": last_played,
+            "has_manifest": is_ready,
+            "manifest_url": manifest_rel,
             "description": custom_meta.get("description", "A comprehensive guide to the architecture, reliability, and engineering trade-offs of modern distributed systems.")
         }
 
         books.append(book_entry)
 
-    output_file = BASE_DIR / "books.json"
-
-    # Preserve any external or wishlist entries from existing books.json
-    existing_wishlist = []
-    if output_file.exists():
-        try:
-            with open(output_file, "r", encoding="utf-8") as f:
-                old_data = json.load(f)
-                for b in old_data.get("books", []):
-                    if b.get("status") == "wishlist":
-                        existing_wishlist.append(b)
-        except Exception as e:
-            print(f"Warning reading existing books.json: {e}")
-
     scanned_ids = {b["id"] for b in books}
     for wb in existing_wishlist:
-        if wb.get("id") not in scanned_ids:
+        wb_id = wb.get("id")
+        if wb_id and wb_id not in scanned_ids:
+            wb["has_manifest"] = False
+            wb["total_tracks"] = len(wb.get("chapters", []))
+            wb["total_duration"] = wb.get("total_duration", 0.0)
+            wb["lastPlayedTimestamp"] = wb.get("lastPlayedTimestamp", 0)
             books.append(wb)
 
     with open(output_file, "w", encoding="utf-8") as f:
         json.dump({"books": books}, f, indent=2, ensure_ascii=False)
 
-    print(f"✅ Generated {output_file} with {len(books)} technical book(s) and {sum(len(b['chapters']) for b in books)} chapter(s).")
+    print(f"✅ Generated {output_file} with {len(books)} technical book summary entries and {total_chapters_scanned} chapters partitioned across manifests.")
 
 if __name__ == "__main__":
     scan()

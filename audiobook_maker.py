@@ -322,8 +322,22 @@ def generate_fallback_cover(title: str, author: str, output_cover_path: Path):
         print(f"⚠️ Error creating fallback cover: {e}")
         return False
 
-def parse_technical_pdf(pdf_path: str, min_words: int = 100) -> Tuple[str, str, List[Dict[str, str]]]:
-    """Parse PDF textbook into logical technical chapters and parts."""
+def parse_technical_pdf(pdf_path: str, min_words: int = 100, checkpoint_dir: Optional[Path] = None) -> Tuple[str, str, List[Dict[str, str]]]:
+    """Parse PDF textbook into logical technical chapters and parts with checkpoint support."""
+    # 0. Checkpoint Stage 2: 02_clean_text.json
+    if checkpoint_dir:
+        clean_text_ckpt = checkpoint_dir / "02_clean_text.json"
+        if clean_text_ckpt.exists():
+            try:
+                with open(clean_text_ckpt, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+                    chaps = data.get("chapters", [])
+                    if chaps:
+                        print(f"📦 Checkpoint 02_clean_text.json loaded! Restored {len(chaps)} cleaned chapters without re-parsing PDF.")
+                        return data.get("title", Path(pdf_path).stem), data.get("author", "Martin Kleppmann"), chaps
+            except Exception as e:
+                print(f"⚠️ Warning reading 02_clean_text.json: {e}")
+
     print(f"📖 Opening Technical Book: {pdf_path}")
     reader = pypdf.PdfReader(pdf_path)
     total_pages = len(reader.pages)
@@ -332,7 +346,36 @@ def parse_technical_pdf(pdf_path: str, min_words: int = 100) -> Tuple[str, str, 
     book_title = meta.title or Path(pdf_path).stem.replace('_', ' ').replace('-', ' ').title()
     book_author = meta.author or "Martin Kleppmann"
 
-    outline_chapters = extract_outline_chapters(reader)
+    outline_chapters = []
+    if checkpoint_dir:
+        outline_ckpt = checkpoint_dir / "01_outline.json"
+        if outline_ckpt.exists():
+            try:
+                with open(outline_ckpt, "r", encoding="utf-8") as f:
+                    outline_data = json.load(f)
+                    outline_chapters = [(item["title"], item["page"]) for item in outline_data.get("outline", [])]
+                    book_title = outline_data.get("title", book_title)
+                    book_author = outline_data.get("author", book_author)
+                    print(f"📦 Checkpoint 01_outline.json loaded! Restored {len(outline_chapters)} bookmarks.")
+            except Exception as e:
+                outline_chapters = extract_outline_chapters(reader)
+        else:
+            outline_chapters = extract_outline_chapters(reader)
+            if outline_chapters:
+                try:
+                    outline_payload = {
+                        "title": book_title,
+                        "author": book_author,
+                        "outline": [{"title": t, "page": p} for t, p in outline_chapters]
+                    }
+                    with open(outline_ckpt, "w", encoding="utf-8") as f:
+                        json.dump(outline_payload, f, indent=2, ensure_ascii=False)
+                    print(f"💾 Checkpointed stage 1: {outline_ckpt.name} ({len(outline_chapters)} bookmarks saved)")
+                except Exception as e:
+                    pass
+    else:
+        outline_chapters = extract_outline_chapters(reader)
+
     chapters = []
 
     if outline_chapters:
@@ -392,6 +435,21 @@ def parse_technical_pdf(pdf_path: str, min_words: int = 100) -> Tuple[str, str, 
                         "text": body,
                         "word_count": w_count
                     })
+
+    if checkpoint_dir and chapters:
+        clean_text_ckpt = checkpoint_dir / "02_clean_text.json"
+        try:
+            clean_payload = {
+                "title": book_title,
+                "author": book_author,
+                "total_chapters": len(chapters),
+                "chapters": chapters
+            }
+            with open(clean_text_ckpt, "w", encoding="utf-8") as f:
+                json.dump(clean_payload, f, indent=2, ensure_ascii=False)
+            print(f"💾 Checkpointed stage 2: {clean_text_ckpt.name} ({len(chapters)} clean chapters saved)")
+        except Exception as e:
+            pass
 
     return book_title, book_author, chapters
 
@@ -539,14 +597,31 @@ def tag_mp3(
         print(f"⚠️ Tagging notice for {file_path.name}: {e}")
 
 async def process_audiobook(args):
-    """Main pipeline for technical audiobook synthesis."""
+    """Main pipeline for technical audiobook synthesis with idempotent checkpoints."""
     pdf_path = Path(args.input).expanduser().resolve()
     if not pdf_path.exists():
         print(f"❌ Error: Textbook not found: {pdf_path}")
         sys.exit(1)
 
-    book_title, book_author, chapters = parse_technical_pdf(str(pdf_path), min_words=args.min_chapter_words)
-    reader = pypdf.PdfReader(str(pdf_path))
+    # Output directory & .checkpoints setup upfront (DDIA Ch 10)
+    meta_title = args.title or pdf_path.stem.replace('_', ' ').replace('-', ' ').title()
+    clean_folder_name = re.sub(r'[\\/*?:"<>|]', '', meta_title).strip()
+    if args.output_dir:
+        output_dir = Path(args.output_dir).expanduser().resolve()
+    else:
+        output_dir = Path.cwd() / clean_folder_name
+
+    output_dir.mkdir(parents=True, exist_ok=True)
+    checkpoint_dir = output_dir / ".checkpoints"
+    checkpoint_dir.mkdir(parents=True, exist_ok=True)
+    print(f"📁 Target Output Directory: {output_dir}")
+    print(f"📦 Checkpoint Store: {checkpoint_dir}\n")
+
+    book_title, book_author, chapters = parse_technical_pdf(
+        str(pdf_path),
+        min_words=args.min_chapter_words,
+        checkpoint_dir=checkpoint_dir
+    )
 
     if args.title:
         book_title = args.title
@@ -581,21 +656,26 @@ async def process_audiobook(args):
         print("❌ Error: No readable text or chapters detected.")
         sys.exit(1)
 
-    # Output directory
-    clean_folder_name = re.sub(r'[\\/*?:"<>|]', '', book_title).strip()
-    if args.output_dir:
-        output_dir = Path(args.output_dir).expanduser().resolve()
-    else:
-        output_dir = Path.cwd() / clean_folder_name
-
-    output_dir.mkdir(parents=True, exist_ok=True)
-    print(f"📁 Target Output Directory: {output_dir}\n")
+    # Checkpoint Stage 3: Load track status
+    tracks_status_ckpt = checkpoint_dir / "03_tracks_status.json"
+    tracks_status = {}
+    if tracks_status_ckpt.exists():
+        try:
+            with open(tracks_status_ckpt, "r", encoding="utf-8") as f:
+                tracks_status = json.load(f)
+            print(f"📦 Loaded checkpoint: 03_tracks_status.json ({len(tracks_status)} tracks verified)")
+        except Exception as e:
+            pass
 
     # Cover art
     cover_path = output_dir / "cover.jpg"
     if not cover_path.exists():
         print("🎨 Extracting book cover...")
-        has_cover = extract_cover_image(reader, cover_path)
+        try:
+            reader = pypdf.PdfReader(str(pdf_path))
+            has_cover = extract_cover_image(reader, cover_path)
+        except Exception:
+            has_cover = False
         if not has_cover:
             generate_fallback_cover(book_title, book_author, cover_path)
         if cover_path.exists():
@@ -617,9 +697,26 @@ async def process_audiobook(args):
         if getattr(args, 'end_chapter', None) and i > args.end_chapter:
             continue
 
-        # Resume support
-        if track_path.exists() and track_path.stat().st_size > 1000:
-            print(f"⏭️ Skipping [{i:02d}/{total_tracks:02d}] (already exists): {chap['title']}")
+        # Checkpoint resume check (DDIA Ch 10)
+        is_ckpt_done = (
+            tracks_status.get(str(i), {}).get("status") == "completed" and
+            track_path.exists() and
+            track_path.stat().st_size > 1000
+        )
+
+        if is_ckpt_done or (track_path.exists() and track_path.stat().st_size > 1000):
+            if not is_ckpt_done:
+                tracks_status[str(i)] = {
+                    "status": "completed",
+                    "track_num": i,
+                    "title": chap['title'],
+                    "filename": track_filename,
+                    "size_bytes": track_path.stat().st_size,
+                    "completed_at": time.time()
+                }
+                with open(tracks_status_ckpt, "w", encoding="utf-8") as f:
+                    json.dump(tracks_status, f, indent=2, ensure_ascii=False)
+            print(f"⏭️ Skipping [{i:02d}/{total_tracks:02d}] (checkpoint verified): {chap['title']}")
             continue
 
         print(f"🔊 Narrating [{i:02d}/{total_tracks:02d}]: {chap['title']} ({chap['word_count']:,} words)...")
@@ -642,6 +739,18 @@ async def process_audiobook(args):
                 voice=args.voice,
                 cover_image_path=cover_path if cover_path.exists() else None
             )
+
+            tracks_status[str(i)] = {
+                "status": "completed",
+                "track_num": i,
+                "title": chap['title'],
+                "filename": track_filename,
+                "size_bytes": track_path.stat().st_size,
+                "completed_at": time.time()
+            }
+            with open(tracks_status_ckpt, "w", encoding="utf-8") as f:
+                json.dump(tracks_status, f, indent=2, ensure_ascii=False)
+
             print(f"   ✅ Track finished: {track_filename}")
         except Exception as e:
             print(f"   ❌ Error synthesizing track {i}: {e}")
@@ -674,6 +783,16 @@ async def process_audiobook(args):
                     voice=args.voice,
                     cover_image_path=cover_path if cover_path.exists() else None
                 )
+                tracks_status[str(i)] = {
+                    "status": "completed",
+                    "track_num": i,
+                    "title": chap['title'],
+                    "filename": track_filename,
+                    "size_bytes": track_path.stat().st_size,
+                    "completed_at": time.time()
+                }
+                with open(tracks_status_ckpt, "w", encoding="utf-8") as f:
+                    json.dump(tracks_status, f, indent=2, ensure_ascii=False)
                 print(f"   ✅ Recovered: {track_filename}")
             except Exception as e:
                 print(f"   ❌ Still failed: {e}")
@@ -691,11 +810,23 @@ async def process_audiobook(args):
             if (output_dir / entry).exists():
                 f.write(f"{entry}\n")
 
+    # Mark pipeline complete
+    pipeline_complete_ckpt = checkpoint_dir / "04_pipeline_complete.json"
+    with open(pipeline_complete_ckpt, "w", encoding="utf-8") as f:
+        json.dump({
+            "status": "completed",
+            "book_title": book_title,
+            "book_author": book_author,
+            "total_tracks": total_tracks,
+            "completed_at": time.time()
+        }, f, indent=2, ensure_ascii=False)
+
     print("\n" + "="*60)
     print(f"🎉 TECHNICAL AUDIOBOOK PROCESS COMPLETE!")
     print(f"📁 Destination: {output_dir}")
     print(f"🎵 Playlist: {playlist_path.name}")
     print(f"🖼️ Cover: {cover_path.name}")
+    print(f"📦 Checkpoints: {checkpoint_dir}")
     print("="*60 + "\n")
 
 def list_voices():
