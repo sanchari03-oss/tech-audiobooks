@@ -1,0 +1,26 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Intermediate audio files
+*.wav
+*.tmp
+*.part
+
+# Environment and IDE
+.venv/
+venv/
+env/
+.idea/
+.vscode/
+
+# System files
+.DS_Store
+Thumbs.db
+*.log
+
+# Raw PDF textbook source files (can be hundreds of megabytes)
+# Store PDFs in Desktop or external folders, or keep git lean
+*.pdf
+!sample*.pdf

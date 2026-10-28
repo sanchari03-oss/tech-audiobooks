@@ -1,0 +1,1897 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>TechBooks • Audio</title>
+  <meta name="description" content="Technical & Engineering Audiobooks for Developers, Architects, and Systems Engineers">
+  <meta name="theme-color" content="#0d1117">
+  <link rel="manifest" href="./manifest.json">
+  <link rel="icon" type="image/svg+xml" href="./icon.svg">
+  <style>
+    :root {
+      --bg: #0d1117;
+      --card-bg: #161b22;
+      --card-hover: #1c2128;
+      --card-border: #30363d;
+      --accent: #38bdf8;
+      --accent-glow: rgba(56, 189, 248, 0.25);
+      --accent-amber: #f59e0b;
+      --accent-green: #238636;
+      --accent-green-bright: #3fb950;
+      --text: #f0f6fc;
+      --text-sub: #8b949e;
+      --text-muted: #6e7681;
+      --player-bg: rgba(22, 27, 34, 0.96);
+      --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding-bottom: 140px;
+      overflow-x: hidden;
+    }
+
+    /* Terminal Monospace Header */
+    header {
+      background-color: #161b22;
+      border-bottom: 1px solid var(--card-border);
+      padding: 16px 24px;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(12px);
+    }
+
+    .header-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      max-width: 1300px;
+      margin: 0 auto;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .brand-icon {
+      width: 36px;
+      height: 36px;
+      background: #0d1117;
+      border: 1px solid var(--accent);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 12px var(--accent-glow);
+    }
+
+    .brand-title {
+      font-family: var(--font-mono);
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .brand-title span {
+      color: var(--accent);
+    }
+
+    .brand-badge {
+      font-size: 0.65rem;
+      font-family: var(--font-mono);
+      background: rgba(56, 189, 248, 0.15);
+      color: var(--accent);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 2px 6px;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .persist-pill {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      padding: 4px 10px;
+      border-radius: 20px;
+      background: rgba(35, 134, 54, 0.2);
+      border: 1px solid rgba(63, 185, 80, 0.4);
+      color: var(--accent-green-bright);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.2s;
+    }
+
+    .persist-pill.warning {
+      background: rgba(245, 158, 11, 0.15);
+      border-color: rgba(245, 158, 11, 0.4);
+      color: var(--accent-amber);
+    }
+
+    .persist-pill:hover {
+      filter: brightness(1.2);
+    }
+
+    .btn-action {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      color: var(--text);
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+
+    .btn-action:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      box-shadow: 0 0 10px var(--accent-glow);
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #0d1117;
+      font-weight: 700;
+    }
+
+    .btn-primary:hover {
+      background: #7dd3fc;
+      border-color: #7dd3fc;
+      color: #0d1117;
+    }
+
+    /* Search & Subnav Container */
+    .subnav-container {
+      max-width: 1300px;
+      margin: 16px auto 0;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    @media (min-width: 768px) {
+      .subnav-container {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+      }
+    }
+
+    .search-box {
+      position: relative;
+      flex: 1;
+      max-width: 440px;
+    }
+
+    .search-input {
+      width: 100%;
+      background: #0d1117;
+      border: 1px solid var(--card-border);
+      color: var(--text);
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      padding: 8px 12px 8px 36px;
+      border-radius: 6px;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .search-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 8px var(--accent-glow);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      scrollbar-width: none;
+    }
+    .tabs::-webkit-scrollbar { display: none; }
+
+    .tab-btn {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-sub);
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .tab-btn:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .tab-btn.active {
+      color: var(--accent);
+      background: rgba(56, 189, 248, 0.1);
+      border-color: rgba(56, 189, 248, 0.3);
+    }
+
+    .tab-count {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 1px 6px;
+      border-radius: 10px;
+      font-size: 0.68rem;
+    }
+
+    .tab-btn.active .tab-count {
+      background: var(--accent);
+      color: #0d1117;
+      font-weight: 700;
+    }
+
+    /* Main Container */
+    main {
+      max-width: 1300px;
+      width: 100%;
+      margin: 24px auto;
+      padding: 0 20px;
+      flex: 1;
+    }
+
+    /* Book Catalog Grid */
+    .books-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 24px;
+    }
+
+    @media (max-width: 480px) {
+      .books-grid {
+        grid-template-columns: 1fr;
+        gap: 18px;
+      }
+    }
+
+    .book-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+      position: relative;
+    }
+
+    .book-card:hover {
+      transform: translateY(-4px);
+      border-color: #484f58;
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    .card-cover-wrap {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 3/4;
+      background: #090d13;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .card-cover-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s;
+    }
+
+    .book-card:hover .card-cover-img {
+      transform: scale(1.03);
+    }
+
+    .cover-overlay-btn {
+      position: absolute;
+      inset: 0;
+      background: rgba(13, 17, 23, 0.6);
+      backdrop-filter: blur(2px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .card-cover-wrap:hover .cover-overlay-btn {
+      opacity: 1;
+    }
+
+    .play-circle-btn {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #0d1117;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 18px var(--accent-glow);
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .play-circle-btn:hover {
+      transform: scale(1.1);
+    }
+
+    .card-badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 4px;
+      background: rgba(13, 17, 23, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: var(--accent);
+      backdrop-filter: blur(4px);
+      text-transform: uppercase;
+    }
+
+    .offline-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 4px;
+      background: rgba(35, 134, 54, 0.85);
+      border: 1px solid rgba(63, 185, 80, 0.4);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .card-body {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .card-title {
+      font-size: 1rem;
+      font-weight: 700;
+      line-height: 1.35;
+      margin-bottom: 4px;
+      color: var(--text);
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .card-author {
+      font-size: 0.82rem;
+      color: var(--text-sub);
+      margin-bottom: 12px;
+    }
+
+    .card-meta {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: auto;
+      padding-top: 10px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .card-progress-bar {
+      width: 100%;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 2px;
+      margin-top: 10px;
+      overflow: hidden;
+    }
+
+    .card-progress-fill {
+      height: 100%;
+      background: var(--accent);
+      width: 0%;
+      transition: width 0.3s;
+    }
+
+    .card-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .card-btn {
+      background: #0d1117;
+      border: 1px solid var(--card-border);
+      color: var(--text);
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 7px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .card-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* Sticky Bottom Player */
+    .player-dock {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--player-bg);
+      border-top: 1px solid var(--card-border);
+      backdrop-filter: blur(16px);
+      z-index: 100;
+      padding: 12px 20px;
+      box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.6);
+      transform: translateY(0);
+      transition: transform 0.3s ease;
+    }
+
+    .player-dock.hidden {
+      transform: translateY(100%);
+    }
+
+    .player-inner {
+      max-width: 1300px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .player-progress-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .player-time {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      min-width: 42px;
+    }
+
+    .time-end {
+      text-align: right;
+    }
+
+    .player-scrubber {
+      flex: 1;
+      -webkit-appearance: none;
+      height: 6px;
+      border-radius: 3px;
+      background: #30363d;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .player-scrubber::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 8px var(--accent-glow);
+      cursor: pointer;
+    }
+
+    .player-controls-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .now-playing-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+      flex: 1;
+      max-width: 320px;
+    }
+
+    .player-thumb {
+      width: 44px;
+      height: 44px;
+      border-radius: 6px;
+      background: #090d13;
+      object-fit: cover;
+      border: 1px solid var(--card-border);
+      flex-shrink: 0;
+    }
+
+    .player-text-wrap {
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .player-track-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: var(--text);
+    }
+
+    .player-book-title {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--text-sub);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .player-buttons {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .ctrl-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-sub);
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .ctrl-btn:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .ctrl-btn-play {
+      background: var(--accent);
+      color: #0d1117;
+      width: 44px;
+      height: 44px;
+      box-shadow: 0 0 12px var(--accent-glow);
+    }
+
+    .ctrl-btn-play:hover {
+      background: #7dd3fc;
+      color: #0d1117;
+      transform: scale(1.05);
+    }
+
+    .player-extra-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      justify-content: flex-end;
+      flex: 1;
+      max-width: 320px;
+    }
+
+    .speed-btn {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 700;
+      background: #0d1117;
+      border: 1px solid var(--card-border);
+      color: var(--accent);
+      padding: 5px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      min-width: 44px;
+      text-align: center;
+    }
+
+    .speed-btn:hover {
+      border-color: var(--accent);
+    }
+
+    /* Modal / Drawer Overlay */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(6px);
+      z-index: 200;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal-window {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      width: 100%;
+      max-width: 600px;
+      max-height: 85vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
+    }
+
+    .modal-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--card-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .modal-title {
+      font-family: var(--font-mono);
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .close-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 1.25rem;
+      line-height: 1;
+      padding: 4px;
+    }
+
+    .close-btn:hover {
+      color: var(--text);
+    }
+
+    .modal-content {
+      padding: 20px;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    /* Chapter Drawer List */
+    .chapters-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .chapter-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 14px;
+      background: #0d1117;
+      border: 1px solid var(--card-border);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .chapter-item:hover {
+      border-color: var(--accent);
+      background: #161b22;
+    }
+
+    .chapter-item.active {
+      border-color: var(--accent);
+      background: rgba(56, 189, 248, 0.1);
+    }
+
+    .chapter-item-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .chapter-num {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--accent);
+      font-weight: 700;
+      min-width: 24px;
+    }
+
+    .chapter-name {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .chapter-item-meta {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .download-pill-btn {
+      background: transparent;
+      border: 1px solid var(--card-border);
+      color: var(--text-sub);
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      padding: 3px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .download-pill-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .download-pill-btn.done {
+      border-color: rgba(63, 185, 80, 0.4);
+      color: var(--accent-green-bright);
+      background: rgba(35, 134, 54, 0.15);
+      cursor: default;
+    }
+
+    /* Modal Form Inputs */
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    .form-label {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--text-sub);
+      margin-bottom: 6px;
+    }
+
+    .form-input, .form-select, .form-textarea {
+      width: 100%;
+      background: #0d1117;
+      border: 1px solid var(--card-border);
+      color: var(--text);
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      padding: 8px 12px;
+      border-radius: 6px;
+      outline: none;
+    }
+
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      border-color: var(--accent);
+    }
+
+    .code-preview {
+      background: #090d13;
+      border: 1px solid var(--card-border);
+      border-radius: 6px;
+      padding: 12px;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: #38bdf8;
+      overflow-x: auto;
+      margin-top: 10px;
+    }
+
+    /* Toast Notification */
+    .toast-container {
+      position: fixed;
+      bottom: 90px;
+      right: 20px;
+      z-index: 300;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      pointer-events: none;
+    }
+
+    .toast {
+      background: #1c2128;
+      border: 1px solid var(--accent);
+      color: var(--text);
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      padding: 10px 16px;
+      border-radius: 6px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+      animation: fadeIn 0.2s ease-out;
+      pointer-events: auto;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Monospace Header -->
+  <header>
+    <div class="header-top">
+      <a href="#" class="brand">
+        <div class="brand-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+          </svg>
+        </div>
+        <div>
+          <div class="brand-title">TECHBOOKS <span>//</span> AUDIO</div>
+        </div>
+      </a>
+
+      <div class="header-actions">
+        <div id="persistPill" class="persist-pill" title="Click to view offline storage stats">
+          <span style="font-size:0.8rem">●</span> <span id="persistText">CHECKING STORAGE</span>
+        </div>
+        <button id="addBookBtn" class="btn-action btn-primary">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          Add Tech Book
+        </button>
+      </div>
+    </div>
+
+    <!-- Search and Navigation Tabs -->
+    <div class="subnav-container">
+      <div class="search-box">
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <input type="text" id="searchInput" class="search-input" placeholder="Search architecture, systems, chapters, or author...">
+      </div>
+
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="all">All Books <span class="tab-count" id="countAll">0</span></button>
+        <button class="tab-btn" data-tab="reading">Currently Reading <span class="tab-count" id="countReading">0</span></button>
+        <button class="tab-btn" data-tab="system-design">System Design & Data <span class="tab-count" id="countSystem">0</span></button>
+        <button class="tab-btn" data-tab="languages-core">Languages & Core <span class="tab-count" id="countLang">0</span></button>
+        <button class="tab-btn" data-tab="finished">Finished <span class="tab-count" id="countFinished">0</span></button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Books Grid -->
+  <main>
+    <div id="booksGrid" class="books-grid">
+      <!-- Injected via JavaScript -->
+    </div>
+  </main>
+
+  <!-- Bottom Player Dock -->
+  <div id="playerDock" class="player-dock hidden">
+    <div class="player-inner">
+      <!-- Scrubber Row -->
+      <div class="player-progress-row">
+        <span id="playerCurrentTime" class="player-time">00:00</span>
+        <input type="range" id="playerScrubber" class="player-scrubber" min="0" max="100" value="0">
+        <span id="playerDuration" class="player-time time-end">00:00</span>
+      </div>
+
+      <!-- Controls Row -->
+      <div class="player-controls-row">
+        <!-- Now Playing -->
+        <div class="now-playing-info">
+          <img id="playerCoverThumb" class="player-thumb" src="./icon.svg" alt="Cover">
+          <div class="player-text-wrap">
+            <div id="playerTrackTitle" class="player-track-title">Select a Chapter</div>
+            <div id="playerBookTitle" class="player-book-title">Technical Audiobook</div>
+          </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="player-buttons">
+          <button id="btnPrevChap" class="ctrl-btn" title="Previous Chapter">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="19 20 9 12 19 4 19 20"></polygon><line x1="5" y1="19" x2="5" y2="5" stroke="currentColor" stroke-width="2"></line></svg>
+          </button>
+          <button id="btnRewind15" class="ctrl-btn" title="Rewind 15 seconds">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 4v6h6"></path><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path><text x="12" y="15" font-size="8" font-family="monospace" fill="currentColor" text-anchor="middle">15</text></svg>
+          </button>
+          <button id="btnPlayPause" class="ctrl-btn ctrl-btn-play" title="Play/Pause">
+            <svg id="playIconSvg" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+          </button>
+          <button id="btnForward15" class="ctrl-btn" title="Forward 15 seconds">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"></path><path d="M20.49 15a9 9 0 1 1-2.13-9.36L23 10"></path><text x="12" y="15" font-size="8" font-family="monospace" fill="currentColor" text-anchor="middle">15</text></svg>
+          </button>
+          <button id="btnNextChap" class="ctrl-btn" title="Next Chapter">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 4 15 12 5 20 5 4"></polygon><line x1="19" y1="5" x2="19" y2="19" stroke="currentColor" stroke-width="2"></line></svg>
+          </button>
+        </div>
+
+        <!-- Extra / Drawer -->
+        <div class="player-extra-controls">
+          <button id="speedBtn" class="speed-btn" title="Playback Speed">1.0x</button>
+          <button id="btnOpenDrawer" class="ctrl-btn" title="View Chapters">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chapters Drawer Modal -->
+  <div id="drawerModal" class="modal-backdrop">
+    <div class="modal-window">
+      <div class="modal-header">
+        <div>
+          <div id="drawerBookTitle" class="modal-title">Chapters</div>
+          <div id="drawerBookAuthor" style="font-size:0.75rem; color:var(--text-sub);">Author</div>
+        </div>
+        <button id="closeDrawerBtn" class="close-btn">&times;</button>
+      </div>
+
+      <!-- Action banner for book -->
+      <div style="padding:12px 20px; background:#0d1117; border-bottom:1px solid var(--card-border); display:flex; align-items:center; justify-content:space-between; gap:10px;">
+        <div>
+          <div id="drawerDownloadStatus" style="font-family:var(--font-mono); font-size:0.75rem; color:var(--text-sub);">0 / 0 tracks downloaded</div>
+          <div id="drawerDownloadProgressWrap" style="display:none; width:160px; height:4px; background:#21262d; border-radius:2px; margin-top:4px; overflow:hidden;">
+            <div id="drawerDownloadProgressBar" style="width:0%; height:100%; background:var(--accent); transition:width 0.2s;"></div>
+          </div>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <button id="btnDownloadAllChapters" class="btn-action" style="padding:6px 10px; font-size:0.72rem;">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            Download All
+          </button>
+          <button id="btnDeleteOfflineBook" class="btn-action" style="padding:6px 10px; font-size:0.72rem; color:#f85149; border-color:#f8514944;">
+            Clear Offline
+          </button>
+        </div>
+      </div>
+
+      <div class="modal-content">
+        <div id="drawerChaptersList" class="chapters-list">
+          <!-- Injected via JS -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Tech Book Modal -->
+  <div id="addBookModal" class="modal-backdrop">
+    <div class="modal-window">
+      <div class="modal-header">
+        <div class="modal-title">+ Add Technical Book</div>
+        <button id="closeAddModalBtn" class="close-btn">&times;</button>
+      </div>
+      <div class="modal-content">
+        <div class="form-group">
+          <label class="form-label">Book Title</label>
+          <input type="text" id="newBookTitle" class="form-input" placeholder="e.g. Designing Data-Intensive Applications">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Author</label>
+          <input type="text" id="newBookAuthor" class="form-input" placeholder="e.g. Martin Kleppmann">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Category</label>
+          <select id="newBookCategory" class="form-select">
+            <option value="system-design">System Design & Data Architecture</option>
+            <option value="languages-core">Languages, Compilers & OS</option>
+            <option value="algorithms-cs">Algorithms & Computer Science</option>
+            <option value="engineering-practices">Clean Architecture & Engineering</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Narrator Voice (Edge TTS)</label>
+          <select id="newBookVoice" class="form-select">
+            <option value="guy">en-US-GuyNeural (Authoritative Non-fiction - Default)</option>
+            <option value="christopher">en-US-ChristopherNeural (Academic Engineering Lecture)</option>
+            <option value="andrew">en-US-AndrewMultilingualNeural (Warm Storyteller)</option>
+            <option value="brian">en-US-BrianMultilingualNeural (Dynamic & Crisp)</option>
+            <option value="ryan">en-GB-RyanNeural (Sophisticated BBC British)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">CLI Generation Command</label>
+          <div class="code-preview" id="cliCommandPreview">
+            python3 audiobook_maker.py &quot;/path/to/book.pdf&quot; --voice guy
+          </div>
+        </div>
+
+        <button id="btnSaveCustomBook" class="btn-action btn-primary" style="width:100%; justify-content:center; margin-top:10px;">
+          Register Book to Catalog
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <audio id="globalAudio" preload="auto"></audio>
+
+  <script>
+    /* =========================================================================
+     * TechBooks • Audio PWA Engine
+     * ========================================================================= */
+
+    const DB_NAME = "tech_audiobooks_db";
+    const DB_VERSION = 2;
+    let db = null;
+    let downloadedBlobKeys = new Set();
+
+    let allBooks = [];
+    let currentFilter = "all";
+    let activeBook = null;
+    let activeChapterIndex = 0;
+    let currentSpeed = 1.0;
+    const SPEEDS = [0.8, 1.0, 1.2, 1.25, 1.5, 1.75, 2.0];
+
+    let downloadAbortController = null;
+    const audio = document.getElementById("globalAudio");
+
+    // Elements
+    const booksGrid = document.getElementById("booksGrid");
+    const persistPill = document.getElementById("persistPill");
+    const persistText = document.getElementById("persistText");
+    const searchInput = document.getElementById("searchInput");
+    const tabBtns = document.querySelectorAll(".tab-btn");
+
+    // Player Elements
+    const playerDock = document.getElementById("playerDock");
+    const playerCoverThumb = document.getElementById("playerCoverThumb");
+    const playerTrackTitle = document.getElementById("playerTrackTitle");
+    const playerBookTitle = document.getElementById("playerBookTitle");
+    const playerCurrentTime = document.getElementById("playerCurrentTime");
+    const playerDuration = document.getElementById("playerDuration");
+    const playerScrubber = document.getElementById("playerScrubber");
+    const btnPlayPause = document.getElementById("btnPlayPause");
+    const playIconSvg = document.getElementById("playIconSvg");
+    const btnPrevChap = document.getElementById("btnPrevChap");
+    const btnNextChap = document.getElementById("btnNextChap");
+    const btnRewind15 = document.getElementById("btnRewind15");
+    const btnForward15 = document.getElementById("btnForward15");
+    const speedBtn = document.getElementById("speedBtn");
+    const btnOpenDrawer = document.getElementById("btnOpenDrawer");
+
+    // Modals
+    const drawerModal = document.getElementById("drawerModal");
+    const closeDrawerBtn = document.getElementById("closeDrawerBtn");
+    const drawerBookTitle = document.getElementById("drawerBookTitle");
+    const drawerBookAuthor = document.getElementById("drawerBookAuthor");
+    const drawerChaptersList = document.getElementById("drawerChaptersList");
+    const drawerDownloadStatus = document.getElementById("drawerDownloadStatus");
+    const btnDownloadAllChapters = document.getElementById("btnDownloadAllChapters");
+    const btnDeleteOfflineBook = document.getElementById("btnDeleteOfflineBook");
+    const drawerDownloadProgressWrap = document.getElementById("drawerDownloadProgressWrap");
+    const drawerDownloadProgressBar = document.getElementById("drawerDownloadProgressBar");
+
+    const addBookBtn = document.getElementById("addBookBtn");
+    const addBookModal = document.getElementById("addBookModal");
+    const closeAddModalBtn = document.getElementById("closeAddModalBtn");
+    const newBookTitle = document.getElementById("newBookTitle");
+    const newBookAuthor = document.getElementById("newBookAuthor");
+    const newBookCategory = document.getElementById("newBookCategory");
+    const newBookVoice = document.getElementById("newBookVoice");
+    const cliCommandPreview = document.getElementById("cliCommandPreview");
+    const btnSaveCustomBook = document.getElementById("btnSaveCustomBook");
+
+    /* IndexedDB Setup */
+    function openDB() {
+      return new Promise((resolve, reject) => {
+        const req = indexedDB.open(DB_NAME, DB_VERSION);
+        req.onupgradeneeded = (e) => {
+          const d = e.target.result;
+          if (!d.objectStoreNames.contains("books")) d.createObjectStore("books", { keyPath: "id" });
+          if (!d.objectStoreNames.contains("audioblobs")) d.createObjectStore("audioblobs");
+        };
+        req.onsuccess = () => {
+          db = req.result;
+          db.onversionchange = () => { db.close(); };
+          resolve();
+        };
+        req.onerror = () => reject(req.error);
+      });
+    }
+
+    function dbSaveBlob(key, blob) {
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction("audioblobs", "readwrite");
+        tx.objectStore("audioblobs").put(blob, key);
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
+      });
+    }
+
+    function dbGetBlob(key) {
+      return new Promise((resolve) => {
+        const tx = db.transaction("audioblobs", "readonly");
+        const req = tx.objectStore("audioblobs").get(key);
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => resolve(null);
+      });
+    }
+
+    function dbGetAllBlobKeys() {
+      return new Promise((resolve) => {
+        const tx = db.transaction("audioblobs", "readonly");
+        const req = tx.objectStore("audioblobs").getAllKeys();
+        req.onsuccess = () => resolve(new Set(req.result || []));
+        req.onerror = () => resolve(new Set());
+      });
+    }
+
+    function dbDeleteBlobsForBook(bookId) {
+      return new Promise((resolve) => {
+        const tx = db.transaction("audioblobs", "readwrite");
+        const store = tx.objectStore("audioblobs");
+        const req = store.getAllKeys();
+        req.onsuccess = () => {
+          const keys = req.result || [];
+          for (const k of keys) {
+            if (String(k).startsWith(`${bookId}_`)) {
+              store.delete(k);
+            }
+          }
+          tx.oncomplete = () => resolve();
+        };
+        req.onerror = () => resolve();
+      });
+    }
+
+    /* Storage Persistence API */
+    async function initStoragePersistence() {
+      if (navigator.storage && navigator.storage.persist) {
+        try {
+          const isPersisted = await navigator.storage.persist();
+          if (isPersisted) {
+            persistPill.classList.remove("warning");
+            persistText.textContent = "OFFLINE PERSISTED";
+          } else {
+            persistPill.classList.add("warning");
+            persistText.textContent = "BEST-EFFORT STORAGE";
+          }
+        } catch (e) {
+          persistText.textContent = "INDEXEDDB READY";
+        }
+      } else {
+        persistText.textContent = "INDEXEDDB READY";
+      }
+
+      persistPill.addEventListener("click", async () => {
+        if (navigator.storage && navigator.storage.estimate) {
+          const est = await navigator.storage.estimate();
+          const usedMB = (est.usage / (1024 * 1024)).toFixed(1);
+          const totalMB = (est.quota / (1024 * 1024)).toFixed(0);
+          showToast(`Storage Used: ${usedMB} MB / Quota: ${totalMB} MB`);
+        } else {
+          showToast(`Persistent storage enabled for technical audiobooks.`);
+        }
+      });
+    }
+
+    /* Toast Helper */
+    function showToast(msg) {
+      const t = document.createElement("div");
+      t.className = "toast";
+      t.textContent = msg;
+      document.getElementById("toastContainer").appendChild(t);
+      setTimeout(() => {
+        t.style.opacity = "0";
+        setTimeout(() => t.remove(), 300);
+      }, 3200);
+    }
+
+    /* Format Seconds to MM:SS or HH:MM:SS */
+    function formatTime(secs) {
+      if (isNaN(secs) || secs < 0) return "00:00";
+      const h = Math.floor(secs / 3600);
+      const m = Math.floor((secs % 3600) / 60);
+      const s = Math.floor(secs % 60);
+      if (h > 0) {
+        return `${h}:${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+      }
+      return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+    }
+
+    function formatDurationHuman(secs) {
+      if (!secs || secs <= 0) return "Ready to narrate";
+      const h = Math.floor(secs / 3600);
+      const m = Math.floor((secs % 3600) / 60);
+      if (h > 0) return `${h}h ${m}m`;
+      return `${m}m`;
+    }
+
+    /* Load Books from books.json and local storage */
+    async function loadBooks() {
+      try {
+        const res = await fetch("./books.json?v=" + Date.now());
+        if (res.ok) {
+          const data = await res.json();
+          allBooks = data.books || [];
+        }
+      } catch (e) {
+        console.warn("Could not load fresh books.json, using fallback", e);
+      }
+
+      // Merge custom books added via modal
+      try {
+        const custom = JSON.parse(localStorage.getItem("techbooks_custom") || "[]");
+        const existingIds = new Set(allBooks.map(b => b.id));
+        for (const cb of custom) {
+          if (!existingIds.has(cb.id)) allBooks.push(cb);
+        }
+      } catch (e) {}
+
+      updateTabCounts();
+      renderBooksGrid();
+    }
+
+    function updateTabCounts() {
+      const q = (searchInput.value || "").toLowerCase().trim();
+      const filtered = allBooks.filter(b => {
+        if (!q) return true;
+        return b.title.toLowerCase().includes(q) ||
+               b.author.toLowerCase().includes(q) ||
+               (b.category && b.category.toLowerCase().includes(q));
+      });
+
+      document.getElementById("countAll").textContent = filtered.length;
+      document.getElementById("countReading").textContent = filtered.filter(b => {
+        const p = getPlaybackState(b.id);
+        return p && p.progress > 0 && p.progress < 99;
+      }).length;
+      document.getElementById("countSystem").textContent = filtered.filter(b => b.category === "system-design").length;
+      document.getElementById("countLang").textContent = filtered.filter(b => b.category === "languages-core").length;
+      document.getElementById("countFinished").textContent = filtered.filter(b => {
+        const p = getPlaybackState(b.id);
+        return p && p.progress >= 99;
+      }).length;
+    }
+
+    function getPlaybackState(bookId) {
+      try {
+        const raw = localStorage.getItem(`playback_${bookId}`);
+        return raw ? JSON.parse(raw) : null;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function savePlaybackState(bookId, chapIdx, time, duration) {
+      if (!bookId) return;
+      const progress = duration > 0 ? Math.round((time / duration) * 100) : 0;
+      const state = {
+        chapterIndex: chapIdx,
+        time: Math.floor(time),
+        duration: Math.floor(duration),
+        progress: progress,
+        timestamp: Date.now()
+      };
+      localStorage.setItem(`playback_${bookId}`, JSON.stringify(state));
+    }
+
+    /* Render Books */
+    function renderBooksGrid() {
+      const query = (searchInput.value || "").toLowerCase().trim();
+      const filtered = allBooks.filter(b => {
+        // Tab filtering
+        if (currentFilter === "reading") {
+          const p = getPlaybackState(b.id);
+          if (!p || p.progress <= 0 || p.progress >= 99) return false;
+        } else if (currentFilter === "finished") {
+          const p = getPlaybackState(b.id);
+          if (!p || p.progress < 99) return false;
+        } else if (currentFilter !== "all" && b.category !== currentFilter) {
+          return false;
+        }
+
+        // Search filtering
+        if (query) {
+          return b.title.toLowerCase().includes(query) ||
+                 b.author.toLowerCase().includes(query) ||
+                 (b.category && b.category.toLowerCase().includes(query));
+        }
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        booksGrid.innerHTML = `
+          <div style="grid-column: 1/-1; text-align:center; padding:60px 20px; font-family:var(--font-mono); color:var(--text-muted);">
+            <div style="font-size:2rem; margin-bottom:12px;">📁</div>
+            <div>No technical books found matching query.</div>
+            <div style="font-size:0.8rem; margin-top:8px;">Add a textbook using the button above or narrate via CLI.</div>
+          </div>
+        `;
+        return;
+      }
+
+      booksGrid.innerHTML = filtered.map(b => {
+        const coverSrc = b.cover_url ? `${b.cover_url}?v=${b.cover_version || 1}` : './icon.svg';
+        const p = getPlaybackState(b.id);
+        const progressPct = p ? Math.min(100, p.progress) : 0;
+        const totalDurationStr = formatDurationHuman(b.total_duration);
+        const hasOffline = (b.chapters || []).every((_, i) => downloadedBlobKeys.has(`${b.id}_${i}`)) && (b.chapters || []).length > 0;
+        const numChaps = (b.chapters || []).length || b.total_tracks || 15;
+
+        return `
+          <div class="book-card" data-book-id="${b.id}">
+            <div class="card-cover-wrap" onclick="openBookDrawer('${b.id}')">
+              <img class="card-cover-img" src="${coverSrc}" alt="${b.title}" loading="lazy">
+              <div class="card-badge">[ ${b.category ? b.category.replace('-', ' ') : 'ENGINEERING'} ]</div>
+              ${hasOffline ? '<div class="offline-badge"><span>●</span> OFFLINE</div>' : ''}
+              <div class="cover-overlay-btn">
+                <div class="play-circle-btn" onclick="event.stopPropagation(); quickPlayBook('${b.id}')">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                </div>
+              </div>
+            </div>
+
+            <div class="card-body">
+              <div class="card-title" title="${b.title}">${b.title}</div>
+              <div class="card-author">${b.author}</div>
+
+              <div class="card-meta">
+                <span>${numChaps} Track${numChaps === 1 ? '' : 's'}</span>
+                <span>${totalDurationStr}</span>
+              </div>
+
+              <div class="card-progress-bar">
+                <div class="card-progress-fill" style="width: ${progressPct}%"></div>
+              </div>
+
+              <div class="card-actions">
+                <button class="card-btn" onclick="quickPlayBook('${b.id}')">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                  Play
+                </button>
+                <button class="card-btn" onclick="openBookDrawer('${b.id}')">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line></svg>
+                  Chapters
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    /* Audio Playback Controls */
+    async function playTrack(book, chapterIndex, seekTime = 0) {
+      if (!book) return;
+      activeBook = book;
+      activeChapterIndex = chapterIndex;
+
+      const chapters = book.chapters || [];
+      if (chapters.length === 0) {
+        showToast("No narrated tracks yet. Run runners/run_ddia.sh to generate audio.");
+        return;
+      }
+
+      const chap = chapters[chapterIndex] || chapters[0];
+      const blobKey = `${book.id}_${chapterIndex}`;
+
+      // Show Player Dock
+      playerDock.classList.remove("hidden");
+      playerTrackTitle.textContent = chap.name;
+      playerBookTitle.textContent = book.title;
+      playerCoverThumb.src = book.cover_url ? `${book.cover_url}?v=${book.cover_version || 1}` : './icon.svg';
+
+      // Check IndexedDB blob first for true offline playback
+      let audioSrc = chap.stream_url;
+      if (downloadedBlobKeys.has(blobKey)) {
+        const blob = await dbGetBlob(blobKey);
+        if (blob) {
+          audioSrc = URL.createObjectURL(blob);
+        }
+      }
+
+      audio.src = audioSrc;
+      audio.playbackRate = currentSpeed;
+
+      audio.onloadedmetadata = () => {
+        if (seekTime > 0 && seekTime < audio.duration) {
+          audio.currentTime = seekTime;
+        }
+      };
+
+      try {
+        await audio.play();
+        updatePlayPauseButton(true);
+      } catch (e) {
+        console.warn("Audio play prevented or interrupted:", e);
+        updatePlayPauseButton(false);
+      }
+
+      updateMediaSession(book, chap);
+      highlightActiveChapterInDrawer();
+    }
+
+    function quickPlayBook(bookId) {
+      const book = allBooks.find(b => b.id === bookId);
+      if (!book) return;
+      const state = getPlaybackState(bookId);
+      const startChap = state ? state.chapterIndex : 0;
+      const startTime = state ? state.time : 0;
+      playTrack(book, startChap, startTime);
+    }
+
+    function updatePlayPauseButton(isPlaying) {
+      if (isPlaying) {
+        playIconSvg.innerHTML = '<rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect>';
+      } else {
+        playIconSvg.innerHTML = '<polygon points="5 3 19 12 5 21 5 3"></polygon>';
+      }
+    }
+
+    btnPlayPause.addEventListener("click", () => {
+      if (!audio.src) {
+        if (allBooks.length > 0) quickPlayBook(allBooks[0].id);
+        return;
+      }
+      if (audio.paused) {
+        audio.play();
+        updatePlayPauseButton(true);
+      } else {
+        audio.pause();
+        updatePlayPauseButton(false);
+      }
+    });
+
+    audio.addEventListener("play", () => updatePlayPauseButton(true));
+    audio.addEventListener("pause", () => updatePlayPauseButton(false));
+
+    audio.addEventListener("timeupdate", () => {
+      if (!isNaN(audio.duration) && audio.duration > 0) {
+        playerCurrentTime.textContent = formatTime(audio.currentTime);
+        playerDuration.textContent = formatTime(audio.duration);
+        playerScrubber.value = (audio.currentTime / audio.duration) * 100;
+
+        if (activeBook) {
+          savePlaybackState(activeBook.id, activeChapterIndex, audio.currentTime, audio.duration);
+        }
+      }
+    });
+
+    audio.addEventListener("ended", () => {
+      if (!activeBook) return;
+      const chapters = activeBook.chapters || [];
+      if (activeChapterIndex + 1 < chapters.length) {
+        playTrack(activeBook, activeChapterIndex + 1);
+      } else {
+        showToast("Book finished!");
+        updatePlayPauseButton(false);
+      }
+    });
+
+    playerScrubber.addEventListener("input", () => {
+      if (!isNaN(audio.duration) && audio.duration > 0) {
+        audio.currentTime = (playerScrubber.value / 100) * audio.duration;
+      }
+    });
+
+    btnPrevChap.addEventListener("click", () => {
+      if (!activeBook) return;
+      if (audio.currentTime > 5) {
+        audio.currentTime = 0;
+      } else if (activeChapterIndex > 0) {
+        playTrack(activeBook, activeChapterIndex - 1);
+      }
+    });
+
+    btnNextChap.addEventListener("click", () => {
+      if (!activeBook) return;
+      const chapters = activeBook.chapters || [];
+      if (activeChapterIndex + 1 < chapters.length) {
+        playTrack(activeBook, activeChapterIndex + 1);
+      }
+    });
+
+    btnRewind15.addEventListener("click", () => {
+      audio.currentTime = Math.max(0, audio.currentTime - 15);
+    });
+
+    btnForward15.addEventListener("click", () => {
+      audio.currentTime = Math.min(audio.duration || 0, audio.currentTime + 15);
+    });
+
+    speedBtn.addEventListener("click", () => {
+      let idx = SPEEDS.indexOf(currentSpeed);
+      idx = (idx + 1) % SPEEDS.length;
+      currentSpeed = SPEEDS[idx];
+      speedBtn.textContent = `${currentSpeed}x`;
+      audio.playbackRate = currentSpeed;
+      showToast(`Playback speed: ${currentSpeed}x`);
+    });
+
+    /* MediaSession API */
+    function updateMediaSession(book, chap) {
+      if ('mediaSession' in navigator && book && chap) {
+        const coverSrc = book.cover_url ? `${book.cover_url}?v=${book.cover_version || 1}` : './icon.svg';
+        navigator.mediaSession.metadata = new MediaMetadata({
+          title: chap.name,
+          artist: book.author,
+          album: book.title,
+          artwork: [
+            { src: coverSrc, sizes: '512x512', type: 'image/jpeg' }
+          ]
+        });
+
+        navigator.mediaSession.setActionHandler('play', () => audio.play());
+        navigator.mediaSession.setActionHandler('pause', () => audio.pause());
+        navigator.mediaSession.setActionHandler('seekbackward', () => { audio.currentTime = Math.max(0, audio.currentTime - 15); });
+        navigator.mediaSession.setActionHandler('seekforward', () => { audio.currentTime = Math.min(audio.duration || 0, audio.currentTime + 15); });
+        navigator.mediaSession.setActionHandler('previoustrack', () => {
+          if (activeBook && activeChapterIndex > 0) playTrack(activeBook, activeChapterIndex - 1);
+        });
+        navigator.mediaSession.setActionHandler('nexttrack', () => {
+          if (activeBook && activeBook.chapters && activeChapterIndex + 1 < activeBook.chapters.length) {
+            playTrack(activeBook, activeChapterIndex + 1);
+          }
+        });
+      }
+    }
+
+    /* Chapter Drawer Modal */
+    let currentDrawerBook = null;
+
+    function openBookDrawer(bookId) {
+      const book = allBooks.find(b => b.id === bookId);
+      if (!book) return;
+      currentDrawerBook = book;
+
+      drawerBookTitle.textContent = book.title;
+      drawerBookAuthor.textContent = book.author;
+
+      renderDrawerChapters();
+      drawerModal.classList.add("open");
+    }
+
+    function renderDrawerChapters() {
+      if (!currentDrawerBook) return;
+      const chapters = currentDrawerBook.chapters || [];
+      const totalChaps = chapters.length;
+
+      let downloadedCount = 0;
+      for (let i = 0; i < totalChaps; i++) {
+        if (downloadedBlobKeys.has(`${currentDrawerBook.id}_${i}`)) downloadedCount++;
+      }
+
+      drawerDownloadStatus.textContent = `${downloadedCount} / ${totalChaps} tracks offline`;
+
+      if (totalChaps === 0) {
+        drawerChaptersList.innerHTML = `
+          <div style="padding:24px; text-align:center; font-family:var(--font-mono); color:var(--text-muted); font-size:0.82rem;">
+            No audio tracks generated yet.<br>
+            Run <span style="color:var(--accent);">runners/run_ddia.sh</span> to synthesize chapters.
+          </div>
+        `;
+        return;
+      }
+
+      drawerChaptersList.innerHTML = chapters.map((c, idx) => {
+        const isOffline = downloadedBlobKeys.has(`${currentDrawerBook.id}_${idx}`);
+        const isActive = activeBook && activeBook.id === currentDrawerBook.id && activeChapterIndex === idx;
+        const durStr = formatTime(c.duration);
+        const sizeMB = (c.file_size / (1024 * 1024)).toFixed(1);
+
+        return `
+          <div class="chapter-item ${isActive ? 'active' : ''}" onclick="playTrack(currentDrawerBook, ${idx})">
+            <div class="chapter-item-left">
+              <span class="chapter-num">${(idx + 1).toString().padStart(2, '0')}</span>
+              <span class="chapter-name">${c.name}</span>
+            </div>
+            <div class="chapter-item-meta">
+              <span>${durStr}</span>
+              <span style="opacity:0.5;">• ${sizeMB} MB</span>
+              <button class="download-pill-btn ${isOffline ? 'done' : ''}" onclick="event.stopPropagation(); downloadSingleChapter(currentDrawerBook, ${idx})">
+                ${isOffline ? '✓ Saved' : 'Download'}
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function highlightActiveChapterInDrawer() {
+      if (!currentDrawerBook || !drawerModal.classList.contains("open")) return;
+      renderDrawerChapters();
+    }
+
+    closeDrawerBtn.addEventListener("click", () => drawerModal.classList.remove("open"));
+    btnOpenDrawer.addEventListener("click", () => {
+      if (activeBook) openBookDrawer(activeBook.id);
+    });
+
+    /* Fast Parallel Chapter Downloading */
+    async function downloadSingleChapter(book, chapterIndex) {
+      const chap = (book.chapters || [])[chapterIndex];
+      if (!chap) return;
+      const key = `${book.id}_${chapterIndex}`;
+
+      if (downloadedBlobKeys.has(key)) {
+        showToast("Chapter already saved offline.");
+        return;
+      }
+
+      showToast(`Downloading: ${chap.name}...`);
+      try {
+        const res = await fetch(chap.stream_url);
+        if (!res.ok) throw new Error("HTTP error " + res.status);
+        const blob = await res.blob();
+        await dbSaveBlob(key, blob);
+        downloadedBlobKeys.add(key);
+        renderDrawerChapters();
+        renderBooksGrid();
+        showToast(`Saved ${chap.name} offline.`);
+      } catch (e) {
+        showToast(`Download failed: ${e.message}`);
+      }
+    }
+
+    btnDownloadAllChapters.addEventListener("click", async () => {
+      if (!currentDrawerBook) return;
+      const chapters = currentDrawerBook.chapters || [];
+      if (chapters.length === 0) return;
+
+      if (downloadAbortController) {
+        downloadAbortController.abort();
+        downloadAbortController = null;
+        drawerDownloadProgressWrap.style.display = "none";
+        btnDownloadAllChapters.textContent = "Download All";
+        showToast("Download canceled.");
+        return;
+      }
+
+      downloadAbortController = new AbortController();
+      btnDownloadAllChapters.textContent = "Cancel";
+      drawerDownloadProgressWrap.style.display = "block";
+
+      // Keep screen awake during download
+      let wakeLock = null;
+      if ('wakeLock' in navigator) {
+        try { wakeLock = await navigator.wakeLock.request('screen'); } catch (e) {}
+      }
+
+      let completed = 0;
+      const toDownload = [];
+      for (let i = 0; i < chapters.length; i++) {
+        if (!downloadedBlobKeys.has(`${currentDrawerBook.id}_${i}`)) {
+          toDownload.push({ index: i, chap: chapters[i] });
+        } else {
+          completed++;
+        }
+      }
+
+      const total = chapters.length;
+      drawerDownloadProgressBar.style.width = `${Math.round((completed / total) * 100)}%`;
+
+      // Parallel download worker with concurrency 3
+      const concurrency = 3;
+      let currentIndex = 0;
+
+      async function worker() {
+        while (currentIndex < toDownload.length) {
+          if (downloadAbortController.signal.aborted) break;
+          const item = toDownload[currentIndex++];
+          const key = `${currentDrawerBook.id}_${item.index}`;
+
+          try {
+            const res = await fetch(item.chap.stream_url, { signal: downloadAbortController.signal });
+            const blob = await res.blob();
+            await dbSaveBlob(key, blob);
+            downloadedBlobKeys.add(key);
+            completed++;
+            const pct = Math.round((completed / total) * 100);
+            drawerDownloadProgressBar.style.width = `${pct}%`;
+            drawerDownloadStatus.textContent = `Downloading ${completed} / ${total} (${pct}%)`;
+          } catch (e) {
+            if (e.name !== 'AbortError') console.warn("Track download error:", e);
+          }
+        }
+      }
+
+      const workers = Array.from({ length: concurrency }, () => worker());
+      await Promise.all(workers);
+
+      if (wakeLock) {
+        try { await wakeLock.release(); } catch (e) {}
+      }
+
+      downloadAbortController = null;
+      btnDownloadAllChapters.textContent = "Download All";
+      drawerDownloadProgressWrap.style.display = "none";
+      renderDrawerChapters();
+      renderBooksGrid();
+      showToast("Download complete! Book is offline ready.");
+    });
+
+    btnDeleteOfflineBook.addEventListener("click", async () => {
+      if (!currentDrawerBook) return;
+      if (!confirm(`Delete all offline audio files for "${currentDrawerBook.title}"?`)) return;
+
+      await dbDeleteBlobsForBook(currentDrawerBook.id);
+      downloadedBlobKeys = await dbGetAllBlobKeys();
+      renderDrawerChapters();
+      renderBooksGrid();
+      showToast("Offline audio removed from device.");
+    });
+
+    /* Add Tech Book Modal */
+    addBookBtn.addEventListener("click", () => addBookModal.classList.add("open"));
+    closeAddModalBtn.addEventListener("click", () => addBookModal.classList.remove("open"));
+
+    function updateCliPreview() {
+      const v = newBookVoice.value;
+      const t = newBookTitle.value.trim() || "textbook.pdf";
+      cliCommandPreview.textContent = `python3 audiobook_maker.py "${t}" --voice ${v}`;
+    }
+
+    newBookTitle.addEventListener("input", updateCliPreview);
+    newBookVoice.addEventListener("change", updateCliPreview);
+
+    btnSaveCustomBook.addEventListener("click", () => {
+      const title = newBookTitle.value.trim();
+      const author = newBookAuthor.value.trim() || "Technical Author";
+      const category = newBookCategory.value;
+
+      if (!title) {
+        showToast("Please enter a book title.");
+        return;
+      }
+
+      const slug = title.toLowerCase().replace(/[^a-z0-9_-]+/g, "-").replace(/^-|-$/g, "");
+      const newBook = {
+        id: slug,
+        title: title,
+        author: author,
+        category: category,
+        status: "planned",
+        cover_url: null,
+        chapters: [],
+        total_tracks: 12,
+        total_duration: 0.0,
+        description: "Registered technical textbook."
+      };
+
+      try {
+        const custom = JSON.parse(localStorage.getItem("techbooks_custom") || "[]");
+        custom.push(newBook);
+        localStorage.setItem("techbooks_custom", JSON.stringify(custom));
+      } catch (e) {}
+
+      allBooks.push(newBook);
+      addBookModal.classList.remove("open");
+      newBookTitle.value = "";
+      newBookAuthor.value = "";
+      updateTabCounts();
+      renderBooksGrid();
+      showToast(`Added "${title}" to your catalog!`);
+    });
+
+    /* Tab Controls */
+    tabBtns.forEach(btn => {
+      btn.addEventListener("click", () => {
+        tabBtns.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        currentFilter = btn.dataset.tab;
+        renderBooksGrid();
+      });
+    });
+
+    searchInput.addEventListener("input", () => {
+      updateTabCounts();
+      renderBooksGrid();
+    });
+
+    /* Close Modals on Backdrop Click */
+    [drawerModal, addBookModal].forEach(m => {
+      m.addEventListener("click", (e) => {
+        if (e.target === m) m.classList.remove("open");
+      });
+    });
+
+    /* Service Worker Registration */
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then(reg => console.log('TechBooks ServiceWorker registered:', reg.scope))
+          .catch(err => console.warn('TechBooks ServiceWorker registration failed:', err));
+      });
+    }
+
+    /* Init */
+    async function init() {
+      await openDB();
+      downloadedBlobKeys = await dbGetAllBlobKeys();
+      await initStoragePersistence();
+      await loadBooks();
+    }
+
+    init();
+  </script>
+</body>
+</html>

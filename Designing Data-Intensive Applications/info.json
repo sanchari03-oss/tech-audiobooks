@@ -1,0 +1,24 @@
+{
+  "title": "Designing Data-Intensive Applications",
+  "author": "Martin Kleppmann",
+  "category": "system-design",
+  "total_tracks": 15,
+  "description": "The definitive guide to data models, storage engines, distributed consensus, transactions, replication, and batch/stream processing for modern cloud applications.",
+  "sections": [
+    "01 - About this Book",
+    "02 - Part I: Foundations of Data Systems",
+    "03 - Chapter 1: Reliable, Scalable and Maintainable Applications",
+    "04 - Chapter 2: Data Models and Query Languages",
+    "05 - Chapter 3: Storage and Retrieval",
+    "06 - Chapter 4: Encoding and Evolution",
+    "07 - Part II: Distributed Data",
+    "08 - Chapter 5: Replication",
+    "09 - Chapter 6: Partitioning",
+    "10 - Chapter 7: Transactions",
+    "11 - Chapter 8: The Trouble with Distributed Systems",
+    "12 - Chapter 9: Consistency and Consensus",
+    "13 - Part III: Derived Data",
+    "14 - Chapter 10: Batch Processing",
+    "15 - Chapter 11: Stream Processing"
+  ]
+}

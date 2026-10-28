@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" rx="96" fill="#0d1117"/>
+  <rect x="24" y="24" width="464" height="464" rx="80" fill="none" stroke="#38bdf8" stroke-width="8" opacity="0.4"/>
+  <path d="M120 160 C120 120 200 110 256 140 C312 110 392 120 392 160 L392 360 C392 360 312 340 256 370 C200 340 120 360 120 360 Z" fill="#161b22" stroke="#38bdf8" stroke-width="14" stroke-linejoin="round"/>
+  <line x1="256" y1="140" x2="256" y2="370" stroke="#f59e0b" stroke-width="10"/>
+  <!-- Headphones arc -->
+  <path d="M140 250 A120 120 0 0 1 372 250" fill="none" stroke="#38bdf8" stroke-width="16" stroke-linecap="round"/>
+  <!-- Earcups -->
+  <rect x="120" y="240" width="36" height="70" rx="18" fill="#f59e0b"/>
+  <rect x="356" y="240" width="36" height="70" rx="18" fill="#f59e0b"/>
+</svg>
