@@ -5,8 +5,8 @@
   "category": "system-design",
   "cover_url": "Designing%20Data-Intensive%20Applications/cover.jpg",
   "cover_version": "1793197947",
-  "total_tracks": 2,
-  "total_duration": 690.3,
+  "total_tracks": 15,
+  "total_duration": 63883.6,
   "chapters": [
     {
       "index": 0,
@@ -21,6 +21,97 @@
       "file_size": 1286406,
       "duration": 65.0,
       "stream_url": "Designing%20Data-Intensive%20Applications/02%20-%20Part%20I%20Foundations%20of%20Data%20Systems.mp3"
+    },
+    {
+      "index": 2,
+      "name": "Chapter 1 Reliable, Scalable and Maintainable Applications",
+      "file_size": 18865104,
+      "duration": 2991.8,
+      "stream_url": "Designing%20Data-Intensive%20Applications/03%20-%20Chapter%201%20Reliable%2C%20Scalable%20and%20Maintainable%20Applications.mp3"
+    },
+    {
+      "index": 3,
+      "name": "Chapter 2 Data Models and Query Languages",
+      "file_size": 32253164,
+      "duration": 5221.0,
+      "stream_url": "Designing%20Data-Intensive%20Applications/04%20-%20Chapter%202%20Data%20Models%20and%20Query%20Languages.mp3"
+    },
+    {
+      "index": 4,
+      "name": "Chapter 3 Storage and Retrieval",
+      "file_size": 33424891,
+      "duration": 5416.1,
+      "stream_url": "Designing%20Data-Intensive%20Applications/05%20-%20Chapter%203%20Storage%20and%20Retrieval.mp3"
+    },
+    {
+      "index": 5,
+      "name": "Chapter 4 Encoding and Evolution",
+      "file_size": 27795637,
+      "duration": 4478.8,
+      "stream_url": "Designing%20Data-Intensive%20Applications/06%20-%20Chapter%204%20Encoding%20and%20Evolution.mp3"
+    },
+    {
+      "index": 6,
+      "name": "Part II Distributed Data",
+      "file_size": 3411213,
+      "duration": 418.8,
+      "stream_url": "Designing%20Data-Intensive%20Applications/07%20-%20Part%20II%20Distributed%20Data.mp3"
+    },
+    {
+      "index": 7,
+      "name": "Chapter 5 Replication",
+      "file_size": 37241372,
+      "duration": 6051.5,
+      "stream_url": "Designing%20Data-Intensive%20Applications/08%20-%20Chapter%205%20Replication.mp3"
+    },
+    {
+      "index": 8,
+      "name": "Chapter 6 Partitioning",
+      "file_size": 17285934,
+      "duration": 2728.9,
+      "stream_url": "Designing%20Data-Intensive%20Applications/09%20-%20Chapter%206%20Partitioning.mp3"
+    },
+    {
+      "index": 9,
+      "name": "Chapter 7 Transactions",
+      "file_size": 42549190,
+      "duration": 6935.3,
+      "stream_url": "Designing%20Data-Intensive%20Applications/10%20-%20Chapter%207%20Transactions.mp3"
+    },
+    {
+      "index": 10,
+      "name": "Chapter 8 The Trouble with Distributed Systems",
+      "file_size": 39385710,
+      "duration": 6408.5,
+      "stream_url": "Designing%20Data-Intensive%20Applications/11%20-%20Chapter%208%20The%20Trouble%20with%20Distributed%20Systems.mp3"
+    },
+    {
+      "index": 11,
+      "name": "Chapter 9 Consistency and Consensus",
+      "file_size": 55859041,
+      "duration": 9151.3,
+      "stream_url": "Designing%20Data-Intensive%20Applications/12%20-%20Chapter%209%20Consistency%20and%20Consensus.mp3"
+    },
+    {
+      "index": 12,
+      "name": "Part III Derived Data",
+      "file_size": 2222598,
+      "duration": 220.9,
+      "stream_url": "Designing%20Data-Intensive%20Applications/13%20-%20Part%20III%20Derived%20Data.mp3"
+    },
+    {
+      "index": 13,
+      "name": "Chapter 10 Batch Processing",
+      "file_size": 43111362,
+      "duration": 7028.9,
+      "stream_url": "Designing%20Data-Intensive%20Applications/14%20-%20Chapter%2010%20Batch%20Processing.mp3"
+    },
+    {
+      "index": 14,
+      "name": "Chapter 11 Stream Processing",
+      "file_size": 37782072,
+      "duration": 6141.5,
+      "stream_url": "Designing%20Data-Intensive%20Applications/15%20-%20Chapter%2011%20Stream%20Processing.mp3"
     }
   ]
 }
