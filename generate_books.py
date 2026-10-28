@@ -189,7 +189,7 @@ def scan():
             "title": title,
             "author": author,
             "category": category,
-            "status": "ready" if is_ready else "planned",
+            "status": "listening" if is_ready else "wishlist",
             "cover_url": cover_rel,
             "cover_version": cover_version,
             "total_tracks": total_tracks,

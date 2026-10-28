@@ -1,5 +1,5 @@
 // TechBooks • Audio - Service Worker
-const CACHE_NAME = 'techbooks-cache-v1';
+const CACHE_NAME = 'techbooks-cache-v2';
 
 const STATIC_ASSETS = [
   './',

@@ -3,7 +3,8 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-# Intermediate audio files
+# Checkpoints
+.checkpoints/
 *.wav
 *.tmp
 *.part
