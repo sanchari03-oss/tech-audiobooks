@@ -1,3 +1,16 @@
 #EXTM3U
 01 - About this Book.mp3
 02 - Part I Foundations of Data Systems.mp3
+03 - Chapter 1 Reliable, Scalable and Maintainable Applications.mp3
+04 - Chapter 2 Data Models and Query Languages.mp3
+05 - Chapter 3 Storage and Retrieval.mp3
+06 - Chapter 4 Encoding and Evolution.mp3
+07 - Part II Distributed Data.mp3
+08 - Chapter 5 Replication.mp3
+09 - Chapter 6 Partitioning.mp3
+10 - Chapter 7 Transactions.mp3
+11 - Chapter 8 The Trouble with Distributed Systems.mp3
+12 - Chapter 9 Consistency and Consensus.mp3
+13 - Part III Derived Data.mp3
+14 - Chapter 10 Batch Processing.mp3
+15 - Chapter 11 Stream Processing.mp3
